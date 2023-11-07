@@ -1,32 +1,18 @@
-import axios from "axios";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react"
+import "./App.css"
 
 const App = () => {
-
-  const [users,setUsers] = useState([]) 
-
-  useEffect( () => {
-    axios("https://jsonplaceholder.typicode.com/users")
-    .then( (res) =>{
-      setUsers(res.data)
-    })
-    .catch((error) => {
-      console.error('Error fetching data: ', error);
-    });
-  },[])
+  const [state, changeState] = useState(0)
 
   return(
-    <>
-    <h2> Users Data </h2>
-    <ul>
-    {users.map((user,i) => {
-      // console.log(user.name)
-      return <li key={i}> { user.name }</li>
-    })}
 
-    </ul>
-    </>
+    <div class="divElement">
+    <p class="para"> Value </p>
+    <p class="para-1">{state}</p>
+    <button onClick={() => {changeState(state + 1)}}> + </button> 
+    <button onClick={() => {changeState(state - 1)}}> - </button>
+    </div>
+
   )
 }
-
 export default App;
