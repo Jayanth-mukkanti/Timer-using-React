@@ -1,39 +1,64 @@
-import React, { useState } from 'react';
-import "./App.css"
-import {Header} from './Header';
-import {DestinationList} from './DestinationList'
-import DestinationCard from './DestinationCard';  
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
+import "./App.css";
+import MovieCards from './MovieCards';
 
 function App() {
 
-  const [DestinationCards, updateDestinationCard] = useState([
-    {imgUrl: 'https://vrindavanmathura.com/wp-content/uploads/elementor/thumbs/prem-mandir-temple-vrindavan-mathura-india-prem-mandir-temple-is-maintained-by-jagadguru-kripalu-parishat-international-non-profit-educational-spiritual-charitable-trust-1-pw397u7i1zoeif2pjbq88xejb64wo8fhoeuipdzpfg.jpg',
-     imgName : "Vrindavan",
-     id: 1},
-     {imgUrl: 'https://www.tourmyindia.com/states/kerala/image/kerala-tourism.webp',
-     imgName : "Kerala",
-     id: 2},
-     {imgUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/fc/f0/goa.jpg?w=700&h=500&s=1',
-     imgName : "Goa",
-     id: 3},
-     {imgUrl: 'https://img.veenaworld.com/wp-content/uploads/2023/03/10-Things-That-Make-Pondicherry-An-Unforgetful-Travel-Destination.jpg',
-     imgName : "Pondicherry",
-     id: 4},
-     {imgUrl: 'https://miro.medium.com/v2/resize:fit:780/1*8Pt72wtBOeEeOEUnyaZfTw.jpeg',
-     imgName : "leh-ladakh",
-     id: 5},
-    ])
+  const [popularMovies, setPopularMovies] = useState([])
+  const [movieName, setMovieName] = useState("")
+  const [searchedMovies, setSearchedMovies] = useState([])
+
+  useEffect(() => {
+    axios.get("https://api.themoviedb.org/3/movie/popular?api_key=cfe422613b250f702980a3bbf9e90716")
+      .then((res) => {
+        setPopularMovies(res.data.results)
+      }).catch((err) => {
+        console.log(err);
+      })
+  }, [])
+
+  useEffect(() => {
+    axios.get(`https://api.themoviedb.org/3/search/movie?query=${movieName}&api_key=cfe422613b250f702980a3bbf9e90716`)
+      .then((res) => {
+        setSearchedMovies(res.data.results)
+      }).catch((err) => {
+        console.log(err);
+      })
+  }, [movieName])
 
   return (
     <>
-    <Header />
-    <DestinationList />
-    { DestinationCards.map( (item,i) => {
-      console.log(item)
-      return <DestinationCard URL = { item.imgUrl } Name = { item.imgName } id = {item.id}/>
-
-    })}
+      <div>
+        <h1> Movies Results </h1>
+        <input id="inputValue"
+          placeholder='Search Movies'
+          value={movieName}
+          onChange={(e) => { setMovieName(e.target.value) }}
+        />
+      </div>
+      <div id='movie-wrapper'>
+        {movieName == "" ? popularMovies.map((item, i) => {
+          return (
+            <MovieCards 
+            poster = {item.poster_path}
+            title = {item.title}
+            Rating = {item.vote_average}
+            ReleaseDate = {item.release_date}
+            />
+            )
+        }) : searchedMovies.map((item, i) => {
+          return (
+            <MovieCards 
+            poster = {item.poster_path}
+            title = {item.title}
+            Rating = {item.vote_average}
+            ReleaseDate = {item.release_date}
+            />)
+        })}
+      </div>
     </>
-  );
+  )
 }
-export default App;
+
+export default App
